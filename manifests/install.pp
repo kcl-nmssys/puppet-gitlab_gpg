@@ -14,7 +14,7 @@ class gitlab_gpg::install {
   }
 
   file {
-    $::gitlab_gpg::install_directory:
+    $::gitlab_gpg::install_path:
       ensure => 'directory',
       owner => 'root',
       group => $::gitlab_gpg::git_group,

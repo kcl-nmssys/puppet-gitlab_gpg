@@ -14,4 +14,11 @@ class gitlab_gpg::config {
       content => to_yaml($configuration),
       show_diff => false;
   }
+
+  $::gitlab_gpg::protected_repos.each |$group, $projects| {
+    ::gitlab_gpg::protected_repo {
+      "${group}/${project}":
+        ensure => 'protected';
+    }
+  }
 }
