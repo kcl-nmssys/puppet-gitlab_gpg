@@ -1,0 +1,37 @@
+---
+image: gitlab.nms.kcl.ac.uk:4567/cm-puppet/puppet
+
+stages:
+  - check
+
+cache:
+  paths:
+    - vendor/bundle
+
+before_script:
+  - bundle -v
+  - rm Gemfile.lock || true
+  - gem update --system $RUBYGEMS_VERSION
+  - gem --version
+  - bundle -v
+  - bundle install --without system_tests --path vendor/bundle --jobs $(nproc)
+
+variables:
+  PUPPET_GEM_VERSION: '~> 6.4'
+  FACTER_GEM_VERSION: '~> 2.4'
+  HIERA_GEM_VERSION: '~> 3.5'
+
+syntax:
+  stage: check
+  script:
+    - bundle exec rake syntax
+
+lint:
+  stage: check
+  script:
+    - bundle exec rake lint
+
+check:git_ignore check:dot_underscore check:test_file rubocop-Ruby:
+  stage: check
+  script:
+    - bundle exec rake check:git_ignore check:dot_underscore check:test_file rubocop
