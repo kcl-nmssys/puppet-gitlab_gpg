@@ -10,6 +10,8 @@
 #   Path to directory for configuration and scripts
 # @param repos_path
 #   Path to GitLab repositories
+# @param gpg_path
+#   Path to gpg binary
 # @param git_path
 #   Path to git binary
 # @param git_user
@@ -30,6 +32,7 @@ class gitlab_gpg (
   String $api_package_version,
   String $install_path,
   String $repos_path,
+  String $gpg_path,
   String $git_path,
   String $git_user,
   String $git_group,
