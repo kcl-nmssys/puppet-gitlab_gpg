@@ -1,0 +1,11 @@
+# Default settings for gitlab_gpg
+gitlab_gpg::api_package_name: python-gitlab
+gitlab_gpg::api_package_version: 1.8.0
+gitlab_gpg::install_path: /opt/gitlab_gpg
+gitlab_gpg::gpg_path: /usr/bin/gpg
+gitlab_gpg::git_path: /opt/gitlab/embedded/bin/git
+gitlab_gpg::git_user: git
+gitlab_gpg::git_group: git
+gitlab_gpg::repos_path: /var/opt/gitlab/git-data/repositories
+gitlab_gpg::extra_gpg_keys: {}
+gitlab_gpg::protected_repos: {}
