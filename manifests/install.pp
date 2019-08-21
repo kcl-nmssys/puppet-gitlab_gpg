@@ -1,10 +1,10 @@
 class gitlab_gpg::install {
   case $facts['os']['family'] {
     'RedHat': {
-      $os_packages = ['python2-pip', 'PyYAML']
+      $os_packages = ['python2-pip', 'python2-requests', 'PyYAML']
     }
     'Debian': {
-      $os_packages = ['python-pip', 'python-yaml']
+      $os_packages = ['python-pip', 'python-requests', 'python-yaml']
     }
   }
 
@@ -28,12 +28,14 @@ class gitlab_gpg::install {
       ensure => 'present',
       owner  => 'root',
       group  => $::gitlab_gpg::git_group,
-      mode   => '0550';
+      mode   => '0550',
+      source => 'puppet:///modules/gitlab_gpg/force_sign.py';
 
     "${::gitlab_gpg::install_path}/bin/get_keys.py":
       ensure => 'present',
       owner  => 'root',
       group  => $::gitlab_gpg::git_group,
-      mode   => '0550';
+      mode   => '0550',
+      source => 'puppet:///modules/gitlab_gpg/get_keys.py';
   }
 }
