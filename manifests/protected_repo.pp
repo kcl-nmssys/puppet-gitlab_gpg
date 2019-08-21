@@ -3,11 +3,11 @@
 # @param group_project
 #   Group and project names, separated by a / e.g. my_group/my_project - defaults to title
 # @param ensure
-#   Whether to protect it or not
+#   Whether to protect it or not, or to issue a warning
 
 define gitlab_gpg::protected_repo (
   Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\/([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/] $group_project = $title,
-  Enum['protected', 'unprotected'] $ensure = 'protected',
+  Enum['protected', 'unprotected', 'warn'] $ensure = 'protected',
 ) {
 
   if $ensure == 'protected' {

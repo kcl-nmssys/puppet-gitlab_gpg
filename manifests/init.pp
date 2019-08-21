@@ -22,6 +22,10 @@
 #   FQDN of gitlab server (from its public URL)
 # @param gitlab_auth_token
 #   An authentication token for a GitLab admin user
+# @param reject_message
+#   Message displayed when pushing unsigned commits (in protected mode)
+# @param warning_message
+#   Message displayed when pushing unsigned commits (in warn mode)
 # @param extra_gpg_keys
 #   Extra GPG keys to import e.g. for former users
 # @param protected_repos
@@ -38,6 +42,8 @@ class gitlab_gpg (
   String $git_group,
   String $gitlab_hostname,
   String $gitlab_auth_token,
+  String $reject_message,
+  String $warning_message,
   Hash[Pattern[/\A[0-9A-F]{16}\z/], String] $extra_gpg_keys,
   Hash[String, Array[String]] $protected_repos,
 ) {
