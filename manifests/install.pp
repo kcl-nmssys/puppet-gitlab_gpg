@@ -12,28 +12,28 @@ class gitlab_gpg::install {
 
   package {
     $::gitlab_gpg::api_package_name:
-      ensure => $::gitlab_gpg::api_package_version,
+      ensure   => $::gitlab_gpg::api_package_version,
       provider => 'pip',
-      require => Package[$os_packages];
+      require  => Package[$os_packages];
   }
 
   file {
     [$::gitlab_gpg::install_path, "${::gitlab_gpg::install_path}/bin", "${::gitlab_gpg::install_path}/keys"]:
       ensure => 'directory',
-      owner => 'root',
-      group => $::gitlab_gpg::git_group,
-      mode => '0550';
+      owner  => 'root',
+      group  => $::gitlab_gpg::git_group,
+      mode   => '0550';
 
     "${::gitlab_gpg::install_path}/bin/force_sign.py":
       ensure => 'present',
-      owner => 'root',
-      group => $::gitlab_gpg::git_group,
-      mode => '0550';
+      owner  => 'root',
+      group  => $::gitlab_gpg::git_group,
+      mode   => '0550';
 
     "${::gitlab_gpg::install_path}/bin/get_keys.py":
       ensure => 'present',
-      owner => 'root',
-      group => $::gitlab_gpg::git_group,
-      mode => '0550';
+      owner  => 'root',
+      group  => $::gitlab_gpg::git_group,
+      mode   => '0550';
   }
 }

@@ -14,9 +14,9 @@ define gitlab_gpg::protected_repo (
     file {
       "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks":
         ensure => 'directory',
-        owner => 'root',
-        group => $::gitlab_gpg::git_group,
-        mode => '0750';
+        owner  => 'root',
+        group  => $::gitlab_gpg::git_group,
+        mode   => '0750';
 
       "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/pre-receive":
         ensure => 'link',
