@@ -35,8 +35,8 @@ class gitlab_gpg::config {
   }
 
   exec {
-    "${::gitlab_gpg::install_path}/bin/get_keys.py --import":
+    "${::gitlab_gpg::install_path}/bin/get_keys.py --mode import":
       user   => $::gitlab_gpg::git_user,
-      unless => "${::gitlab_gpg::install_path}/bin/get_keys.py --check";
+      unless => "${::gitlab_gpg::install_path}/bin/get_keys.py --mode check";
   }
 }
