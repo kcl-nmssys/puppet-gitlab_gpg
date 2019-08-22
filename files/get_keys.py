@@ -8,7 +8,9 @@ import gitlab
 import gnupg
 import os
 import pwd
+import re
 import sys
+import syslog
 import yaml
 
 parser = argparse.ArgumentParser()
@@ -37,24 +39,50 @@ for key in gpg.list_keys():
     current_keys[key['fingerprint']] = 1
 
 need_import = False
+import_status = 0
 
+# First handle keys from GitLab
 for user in users:
     keys = user.gpgkeys.list()
     if len(keys) > 0:
         for key in keys:
-            key_file = 'keys/%s_%d.key' % (user.username, key.id)
+            key_file = 'keys/gitlab/%s_%d.pub' % (user.username, key.id)
             with open(key_file, 'w') as fh:
                 fh.write('%s\n' % key.key)
 
-            key_data = gpg.scan_keys(key_file)
-            if key_data[0]['fingerprint'] not in current_keys:
+            key_data = gpg.scan_keys(key_file)[0]
+            if key_data['fingerprint'] not in current_keys:
                 if args.mode == 'check':
                     need_import = True
                 else:
                     import_result = gpg.import_keys(key.key)
-                    print('Imported key %s for user %s' % (import_result.fingerprints[0], user.username))
+                    if import_result.count > 0:
+                        syslog.syslog(syslog.LOG_INFO, 'Imported key for user [%s]: [%s] [%s]' % (user.username, key_data['fingerprint'], ', '.join(key_data['uids'])))
+                    else:
+                        syslog.syslog(syslog.LOG_ERR, 'Failed importing key for user [%s]: [%s] [%s]' % (user.username, key_data['fingerprint'], ', '.join(key_data['uids'])))
+                        import_status = 1
+
+# Now handle any extra keys specified by Puppet
+for file in os.listdir('keys/extra'):
+    matched = re.match(r'^.+\.pub$', file)
+    if matched:
+        key_path = 'keys/extra/%s' % file
+        key_data = gpg.scan_keys(key_path)[0]
+        if key_data['fingerprint'] not in current_keys:
+            if args.mode == 'check':
+                need_import = True
+            else:
+                with open(key_path) as fh:
+                    import_result = gpg.import_keys(fh.read())
+                if import_result.count > 0:
+                    syslog.syslog(syslog.LOG_INFO, 'Imported extra key [%s] [%s]' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
+                else:
+                    syslog.syslog(syslog.LOG_ERR, 'Failed importing extra key [%s] [%s]' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
+                    import_status = 1
 
 if args.mode == 'check':
     if need_import:
         sys.exit(0)
     sys.exit(1)
+
+sys.exit(import_status)
