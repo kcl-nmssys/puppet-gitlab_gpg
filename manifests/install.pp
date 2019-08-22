@@ -11,7 +11,7 @@ class gitlab_gpg::install {
   ensure_packages($os_packages)
 
   file {
-    [$::gitlab_gpg::install_path, "${::gitlab_gpg::install_path}/bin", "${::gitlab_gpg::install_path}/keys"]:
+    [$::gitlab_gpg::install_path, "${::gitlab_gpg::install_path}/bin", "${::gitlab_gpg::install_path}/keys", "${::gitlab_gpg::install_path}/keys/gitlab", "${::gitlab_gpg::install_path}/extra"]:
       ensure => 'directory',
       owner  => 'root',
       group  => $::gitlab_gpg::git_group,
