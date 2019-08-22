@@ -44,7 +44,7 @@ class gitlab_gpg (
   String $gitlab_auth_token,
   String $reject_message,
   String $warning_message,
-  Hash[Pattern[/\A[0-9A-F]{16}\z/], String] $extra_gpg_keys,
+  Hash[String, String] $extra_gpg_keys,
   Hash[String, Array[String]] $protected_repos,
 ) {
 
