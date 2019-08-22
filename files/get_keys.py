@@ -5,8 +5,8 @@
 
 import gitlab
 import gnupg
-import hashlib
 import os
+import pwd
 import sys
 import yaml
 
@@ -22,12 +22,21 @@ except:
 gl = gitlab.Gitlab('https://%s/' % config['gitlab_hostname'], private_token=config['gitlab_auth_token'])
 users = gl.users.list()
 
+gpg = gnupg.GPG(gnupghome='%s/.gnupg' % pwd.getpwuid(os.getuid()).pw_dir)
+
+current_keys = {}
+for key in gpg.list_keys():
+    current_keys[key['fingerprint']] = 1
+
 for user in users:
     keys = user.gpgkeys.list()
     if len(keys) > 0:
         for key in keys:
-            hash = hashlib.sha256(key.key).hexdigest()
-            key_file = 'keys/%s.key' % hash
-            if not os.path.exists(key_file):
-                with open(key_file, 'w') as fh:
-                    fh.write('%s\n' % key.key)
+            key_file = 'keys/%s_%d.key' % (user.username, key.id)
+            with open(key_file, 'w') as fh:
+                fh.write('%s\n' % key.key)
+
+            key_data = gpg.scan_keys(key_file)
+            if key_data[0]['fingerprint'] not in current_keys:
+                import_result = gpg.import_keys(key.key)
+                print('Imported key %s for user %s' % (import_result.fingerprints[0], user.username))
