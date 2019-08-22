@@ -23,8 +23,9 @@ class gitlab_gpg::config {
   }
 
   $::gitlab_gpg::extra_gpg_keys.each |$id, $key| {
+    $ucid = upcase($id)
     file {
-      "${::gitlab_gpg::install_path}/keys/${id}.pub":
+      "${::gitlab_gpg::install_path}/keys/${ucid}.pub":
         ensure  => 'present',
         owner   => 'root',
         group   => $::gitlab_gpg::git_group,
@@ -36,7 +37,8 @@ class gitlab_gpg::config {
 
   exec {
     "${::gitlab_gpg::install_path}/bin/get_keys.py --mode import":
-      user   => $::gitlab_gpg::git_user,
-      unless => "${::gitlab_gpg::install_path}/bin/get_keys.py --mode check";
+      user    => $::gitlab_gpg::git_user,
+      unless  => "${::gitlab_gpg::install_path}/bin/get_keys.py --mode check",
+      require => [File[$::gitlab_gpg::config_file]];
   }
 }
