@@ -1,21 +1,14 @@
 class gitlab_gpg::install {
   case $facts['os']['family'] {
     'RedHat': {
-      $os_packages = ['python2-pip', 'python2-requests', 'PyYAML']
+      $os_packages = ['python2-pip', 'python2-requests', 'PyYAML', 'python2-gnupg', 'python2-gitlab']
     }
     'Debian': {
-      $os_packages = ['python-pip', 'python-requests', 'python-yaml']
+      $os_packages = ['python-pip', 'python-requests', 'python-yaml', 'python-gnupg', 'python-gitlab']
     }
   }
 
   ensure_packages($os_packages)
-
-  package {
-    $::gitlab_gpg::api_package_name:
-      ensure   => $::gitlab_gpg::api_package_version,
-      provider => 'pip',
-      require  => Package[$os_packages];
-  }
 
   file {
     [$::gitlab_gpg::install_path, "${::gitlab_gpg::install_path}/bin", "${::gitlab_gpg::install_path}/keys"]:

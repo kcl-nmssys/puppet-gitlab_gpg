@@ -4,6 +4,7 @@
 # Part of puppet-gitlab_gpg - https://github.com/kcl-nmssys/puppet-gitlab_gpg
 
 import gitlab
+import gnupg
 import hashlib
 import os
 import sys
