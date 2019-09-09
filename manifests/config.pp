@@ -3,6 +3,7 @@ class gitlab_gpg::config {
     gitlab_hostname   => $::gitlab_gpg::gitlab_hostname,
     gitlab_auth_token => $::gitlab_gpg::gitlab_auth_token,
     extra_gpg_keys    => keys($::gitlab_gpg::extra_gpg_keys),
+    notify_bin        => $::gitlab_gpg::notify_bin,
   }
 
   file {

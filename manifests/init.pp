@@ -30,6 +30,8 @@
 #   Extra GPG keys to import e.g. for former users
 # @param protected_repos
 #   Hash of protected repos, group => [project1, project2]
+# @param notify_bin
+#   Path to a program which notified when a push is rejected
 
 class gitlab_gpg (
   String $api_package_name,
@@ -46,6 +48,7 @@ class gitlab_gpg (
   String $warning_message,
   Hash[String, String] $extra_gpg_keys,
   Hash[String, Array[String]] $protected_repos,
+  String $notify_bin,
 ) {
 
   $config_file = "${install_path}/config.yaml"

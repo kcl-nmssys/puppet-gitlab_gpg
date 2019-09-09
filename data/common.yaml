@@ -14,3 +14,4 @@ gitlab_gpg::reject_message: |
   Your new commits to this repository are not signed with a known GPG key.
   Your push has been rejected. Please read the following instructions
   https://docs.gitlab.com/12.1/ee/user/project/repository/gpg_signed_commits/
+gitlab_gpg::notify_bin: /bin/true
