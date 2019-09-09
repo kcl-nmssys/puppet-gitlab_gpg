@@ -51,8 +51,6 @@ class gitlab_gpg (
   String $notify_bin,
 ) {
 
-  $config_file = "${install_path}/config.yaml"
-
   contain ::gitlab_gpg::install
   contain ::gitlab_gpg::config
 

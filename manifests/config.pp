@@ -7,7 +7,7 @@ class gitlab_gpg::config {
   }
 
   file {
-    $::gitlab_gpg::config_file:
+    '/etc/gitlab_gpg/config.yaml':
       ensure    => 'present',
       owner     => 'root',
       group     => $::gitlab_gpg::git_group,
