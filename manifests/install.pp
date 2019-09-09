@@ -1,10 +1,10 @@
 class gitlab_gpg::install {
   case $facts['os']['family'] {
     'RedHat': {
-      $os_packages = ['python2-pip', 'python2-requests', 'PyYAML', 'python2-gnupg', 'python2-gitlab']
+      $os_packages = ['python2-requests', 'PyYAML', 'python2-gnupg', 'python2-gitlab']
     }
     'Debian': {
-      $os_packages = ['python-pip', 'python-requests', 'python-yaml', 'python-gnupg', 'python-gitlab']
+      $os_packages = ['python-requests', 'python-yaml', 'python-gnupg', 'python-gitlab']
     }
   }
 
