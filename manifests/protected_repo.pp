@@ -18,13 +18,13 @@ define gitlab_gpg::protected_repo (
         group  => $::gitlab_gpg::git_group,
         mode   => '0750';
 
-      "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/pre-receive":
+      "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/update":
         ensure => 'link',
         target => "${::gitlab_gpg::install_path}/bin/force_sign.py";
     }
   } else {
     file {
-      "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/pre-receive":
+      "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/update":
         ensure => 'absent';
     }
   }
