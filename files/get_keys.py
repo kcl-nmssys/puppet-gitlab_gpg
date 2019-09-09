@@ -20,14 +20,14 @@ if not args.mode or (args.mode != 'check' and args.mode != 'import'):
     sys.stderr.write('No --mode specified - must be check or import\n')
     sys.exit(1)
 
-os.chdir(os.path.dirname(__file__))
-
 try:
-    with open('config.yaml') as fh:
+    with open('/etc/gitlab_gpg/config.yaml') as fh:
         config = yaml.load(fh, Loader=yaml.SafeLoader)
 except:
     sys.stderr.write('Failed to load configuration file\n')
     sys.exit(1)
+
+os.chdir(config['install_path'])
 
 gl = gitlab.Gitlab('https://%s/' % config['gitlab_hostname'], private_token=config['gitlab_auth_token'])
 users = gl.users.list()
