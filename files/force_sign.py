@@ -4,6 +4,7 @@
 # Part of puppet-gitlab_gpg - https://github.com/kcl-nmssys/puppet-gitlab_gpg
 
 import datetime
+import json
 import os
 import subprocess
 import sys
@@ -73,13 +74,44 @@ fields = {
     'committer_email': 'ce',
     'committer_name': 'cn',
     'timestamp': 'ct',
-    'comment': 'B',
+    'message': 'B',
     'sig_status': 'G?'
 }
+
+messages = []
+if config['ensure'] == 'protected':
+    messages.append(config['reject_message'])
+else:
+    messages.append(config['warning_message'])
+
 for commit in commits:
-    commit_meta[commit] = {}
+    meta = {}
     for field_name in fields.keys():
-        commit_meta[commit][field_name] = git_show(commit, fields[field_name])
-    if commit_meta['sig_status'] in ['B', 'E', 'N', 'R']:
+        meta[field_name] = git_show(commit, fields[field_name])
+    if meta['sig_status'] in ['B', 'E', 'N', 'R']:
+        message = 'Commit: %s\n' % commit
+        message += 'Author: %s <%s>\n' % (meta['author_name'], meta['author_email'])
+        message += 'Date: %s\n' % datetime.datetime.fromtimestamp(int(meta['timestamp'])).strftime('%Y-%m-%d %H:%M:%S')
+        message += 'GPG status: %s (%s)\n' % (meta['sig_status'], sig_status[meta['sig_status']])
+        message += 'Message: %s\n' % meta['message']
+        messages.append(message)
         if config['ensure'] == 'protected':
             exit_status = 1
+            json_message = json.dumps({
+                'commit': commit,
+                'author': {'name': meta['author_name'], 'email': meta['author_email']},
+                'committer': {'name': meta['committer_name'], 'email': meta['committer_email']},
+                'timestamp': int(meta['timestamp']),
+                'message': meta['message'],
+                'gpg_status': meta['sig_status'],
+            })
+            syslog.syslog(syslog.LOG_WARNING, 'Rejected commit %s' % commit)
+            syslog.syslog(syslog.LOG_WARNING, json_message)
+            proc = subprocess.Popen(config['notify_bin'], stdin=subprocess.PIPE)
+            proc.communicate(input=json_message)
+
+if len(messages) > 1:
+    for message in messages:
+        print(message)
+
+sys.exit(exit_status)

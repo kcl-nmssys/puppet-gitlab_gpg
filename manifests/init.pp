@@ -10,14 +10,14 @@
 #   Path to directory for configuration and scripts
 # @param repos_path
 #   Path to GitLab repositories
-# @param gpg_path
-#   Path to gpg binary
 # @param git_path
 #   Path to git binary
 # @param git_user
 #   Name of gitlab git user
 # @param git_group
 #   Name of gitlab git user's primary group
+# @param git_user_home
+#   Path to git user's home directory
 # @param gitlab_hostname
 #   FQDN of gitlab server (from its public URL)
 # @param gitlab_auth_token
@@ -38,10 +38,10 @@ class gitlab_gpg (
   String $api_package_version,
   String $install_path,
   String $repos_path,
-  String $gpg_path,
   String $git_path,
   String $git_user,
   String $git_group,
+  String $git_user_home,
   String $gitlab_hostname,
   String $gitlab_auth_token,
   String $reject_message,

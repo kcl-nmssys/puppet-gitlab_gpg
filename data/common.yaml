@@ -3,6 +3,7 @@ gitlab_gpg::install_path: /opt/gitlab_gpg
 gitlab_gpg::git_path: /opt/gitlab/embedded/bin/git
 gitlab_gpg::git_user: git
 gitlab_gpg::git_group: git
+gitlab_gpg::git_user_home: /var/opt/gitlab
 gitlab_gpg::repos_path: /var/opt/gitlab/git-data/repositories
 gitlab_gpg::extra_gpg_keys: {}
 gitlab_gpg::protected_repos: {}
