@@ -32,7 +32,7 @@
 #   Path to a program which notified when a push is rejected
 
 class gitlab_gpg (
-  String $os_packages,
+  Array[String] $os_packages,
   String $install_path,
   String $repos_path,
   String $git_path,
