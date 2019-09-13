@@ -101,6 +101,7 @@ for commit in commits:
                 'commit': commit,
                 'author': {'name': meta['author_name'], 'email': meta['author_email']},
                 'committer': {'name': meta['committer_name'], 'email': meta['committer_email']},
+                'username': username,
                 'timestamp': int(meta['timestamp']),
                 'message': meta['message'],
                 'gpg_status': meta['sig_status'],
