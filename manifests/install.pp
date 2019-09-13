@@ -1,14 +1,5 @@
 class gitlab_gpg::install {
-  case $facts['os']['family'] {
-    'RedHat': {
-      $os_packages = ['python2-requests', 'PyYAML', 'python2-gnupg', 'python2-gitlab']
-    }
-    'Debian': {
-      $os_packages = ['python-requests', 'python-yaml', 'python-gnupg', 'python-gitlab']
-    }
-  }
-
-  ensure_packages($os_packages)
+  ensure_packages($::gitlab_gpg::os_packages)
 
   file {
     ['/etc/gitlab_gpg', '/etc/gitlab_gpg/repos', $::gitlab_gpg::install_path, "${::gitlab_gpg::install_path}/bin", "${::gitlab_gpg::install_path}/keys", "${::gitlab_gpg::install_path}/keys/extra"]:

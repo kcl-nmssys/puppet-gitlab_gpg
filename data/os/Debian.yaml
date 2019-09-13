@@ -1,0 +1,5 @@
+gitlab_gpg::os_packages:
+  - python-requests
+  - python-yaml
+  - python-gnupg
+  - python-gitlab
