@@ -24,8 +24,8 @@
 #   Message displayed when pushing unsigned commits (in protected mode)
 # @param warning_message
 #   Message displayed when pushing unsigned commits (in warn mode)
-# @param extra_gpg_keys
-#   Extra GPG keys to import e.g. for former users
+# @param trusted_keys
+#   Hash of trusted GPG public keys, gitlab_username => concatenated base64 keys
 # @param protected_repos
 #   Hash of protected repos, group => [project1, project2]
 # @param notify_bin
@@ -43,7 +43,7 @@ class gitlab_gpg (
   String $gitlab_auth_token,
   String $reject_message,
   String $warning_message,
-  Hash[String, String] $extra_gpg_keys,
+  Hash[Pattern[\A[a-zA-Z0-9_.-]+\z], String] $trusted_keys,
   Hash[String, Array[String]] $protected_repos,
   String $notify_bin,
 ) {
