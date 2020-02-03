@@ -26,17 +26,14 @@ class gitlab_gpg::config {
   }
 
   $::gitlab_gpg::trusted_keys.each |$username, $user_keys| {
-    $user_keys.each |$key| {
-      $md5 = md5($key)
-      file {
-        "${::gitlab_gpg::install_path}/keys/trusted/${username}_${md5}.pub":
-          ensure  => 'present',
-          owner   => 'root',
-          group   => $::gitlab_gpg::git_group,
-          mode    => '0640',
-          content => "${key}\n",
-          before  => Exec["${::gitlab_gpg::install_path}/bin/get_keys.py --import"];
-      }
+    file {
+      "${::gitlab_gpg::install_path}/keys/trusted/${username}.pub":
+        ensure  => 'present',
+        owner   => 'root',
+        group   => $::gitlab_gpg::git_group,
+        mode    => '0640',
+        content => "${user_keys}\n",
+        before  => Exec["${::gitlab_gpg::install_path}/bin/get_keys.py --import"];
     }
   }
 
