@@ -35,5 +35,12 @@ class gitlab_gpg::install {
       group  => $::gitlab_gpg::git_group,
       mode   => '0550',
       source => 'puppet:///modules/gitlab_gpg/manage_keys.py';
+
+    "${::gitlab_gpg::install_path}/bin/protect_group.py":
+      ensure => 'present',
+      owner  => 'root',
+      group  => $::gitlab_gpg::git_group,
+      mode   => '0550',
+      source => 'puppet:///modules/gitlab_gpg/protect_group.py';
   }
 }
