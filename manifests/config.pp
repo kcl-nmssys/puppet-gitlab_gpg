@@ -33,12 +33,12 @@ class gitlab_gpg::config {
         group   => $::gitlab_gpg::git_group,
         mode    => '0640',
         content => "${user_keys}\n",
-        before  => Exec["${::gitlab_gpg::install_path}/bin/manage_keys.py --import"];
+        before  => Exec["${::gitlab_gpg::install_path}/bin/manage_keys.py --mode update"];
     }
   }
 
   exec {
-    "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode import":
+    "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode update":
       user    => $::gitlab_gpg::git_user,
       unless  => "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode check",
       require => [File[$::gitlab_gpg::config_file]];
