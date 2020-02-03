@@ -1,11 +1,12 @@
 class gitlab_gpg::config {
   $configuration = {
-    gitlab_hostname   => $::gitlab_gpg::gitlab_hostname,
-    gitlab_auth_token => $::gitlab_gpg::gitlab_auth_token,
-    extra_gpg_keys    => keys($::gitlab_gpg::extra_gpg_keys),
-    notify_bin        => $::gitlab_gpg::notify_bin,
-    install_path      => $::gitlab_gpg::install_path,
-    repos_path        => $::gitlab_gpg::repos_path,
+    gitlab_hostname    => $::gitlab_gpg::gitlab_hostname,
+    gitlab_auth_token  => $::gitlab_gpg::gitlab_auth_token,
+    extra_gpg_keys     => keys($::gitlab_gpg::extra_gpg_keys),
+    notify_bin         => $::gitlab_gpg::notify_bin,
+    install_path       => $::gitlab_gpg::install_path,
+    repos_path         => $::gitlab_gpg::repos_path,
+    manage_gitlab_keys => $::gitlab_gpg::manage_gitlab_keys,
   }
 
   file {
