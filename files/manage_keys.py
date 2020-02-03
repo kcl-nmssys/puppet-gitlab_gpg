@@ -36,13 +36,21 @@ current_keys_keyring = {}
 current_keys_gitlab = {}
 
 # See what's in our keyring already
-gpg = gnupg.GPG(gnupghome='%s/.gnupg' % pwd.getpwuid(os.getuid()).pw_dir)
-for key in gpg.list_keys():
-    current_keys_keyring[key['fingerprint']] = 1
+try:
+    gpg = gnupg.GPG(gnupghome='%s/.gnupg' % pwd.getpwuid(os.getuid()).pw_dir)
+    for key in gpg.list_keys():
+        current_keys_keyring[key['fingerprint']] = 1
+except Exception as e:
+    syslog.syslog(syslog.LOG_ERR, 'Failed to load keys from keyring: %s' % (e,))
+    sys.exit(1)
 
 # See what's in GitLab already
-gl = gitlab.Gitlab('https://%s/' % config['gitlab_hostname'], private_token=config['gitlab_auth_token'])
-users = gl.users.list()
+try:
+    gl = gitlab.Gitlab('https://%s/' % config['gitlab_hostname'], private_token=config['gitlab_auth_token'])
+    users = gl.users.list()
+except Exception as e:
+    syslog.syslog(syslog.LOG_ERR, 'Failed to get users list from GitLab: %s' % (e,))
+    sys.exit(1)
 for user in users:
     keys = user.gpgkeys.list()
     if len(keys) > 0:
@@ -72,16 +80,19 @@ for file in os.listdir('keys/trusted'):
                     if import_result.count > 0:
                         syslog.syslog(syslog.LOG_INFO, 'Imported key [%s] [%s] into keyring' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
                     else:
-                        syslog.syslog(syslog.LOG_ERR, 'Failed importing key [%s] [%s] into keyring' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
-                        import_status = 1
+                        syslog.syslog(syslog.LOG_ERR, 'Failed to import key [%s] [%s] into keyring' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
+                        update_status = 1
 
             if key_data['fingerprint'] not in current_keys_gitlab:
                 if args.mode == 'check':
                     need_update = True
                 else:
-                    user = gl.users.list(username=username)[0]
-                    user.gpgkeys.create({'key': gpg.export_keys(key_data['fingerprint'])})
-                    syslog.syslog(syslog.LOG_INFO, 'Imported key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
+                    try:
+                        user = gl.users.list(username=username)[0]
+                        user.gpgkeys.create({'key': gpg.export_keys(key_data['fingerprint'])})
+                        syslog.syslog(syslog.LOG_INFO, 'Imported key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
+                    except Exception as e:
+                        syslog.syslog(syslog.LOG_ERR, 'Failed to import key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
 
 # Remove any unexpected keys from GitLab
 if config['manage_gitlab_keys']:
@@ -90,15 +101,26 @@ if config['manage_gitlab_keys']:
             if args.mode == 'check':
                 need_update = True
             else:
-                user = gl.users.list(username=current_keys_gitlab[fingerprint][user])[0]
-                user.gpgkeys.delete(current_keys_gitlab[fingerprint][key])
-                syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] [%s] from GitLab' % (fingerprint, current_keys_gitlab[fingerprint][user]))
+                try:
+                    user = gl.users.list(username=current_keys_gitlab[fingerprint][user])[0]
+                    user.gpgkeys.delete(current_keys_gitlab[fingerprint][key])
+                    syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] [%s] from GitLab' % (fingerprint, current_keys_gitlab[fingerprint][user]))
+                except Exception as e:
+                    syslog.syslog(syslog.LOG_ERR, 'Failed to delete key [%s] [%s] from GitLab: %s' % (fingerprint, current_keys_gitlab[fingerprint][user], e))
+                    update_status = 1
 
 # Remove any unexpected keys from keyring
 for fingerprint in current_keys_keyring:
     if fingerprint not in trusted:
-        gpg.delete_keys(fingerprint)
-        syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] from keyring' % (fingerprint,))
+        if args.mode == 'check':
+            need_update = True
+        else:
+            try:
+                gpg.delete_keys(fingerprint)
+                syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] from keyring' % (fingerprint,))
+            except Exception as e:
+                syslog.syslog(syslog.LOG_INFO, 'Failed to delete key [%s] from keyring: %s' % (fingerprint, e))
+                update_status = 1
 
 if args.mode == 'check':
     if need_update:
