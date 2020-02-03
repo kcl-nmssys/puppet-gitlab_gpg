@@ -29,12 +29,26 @@ except:
 cwd = os.getcwd()
 if cwd.startswith(config['repos_path']):
     group_project = cwd[len(config['repos_path']) + 1:-4]
-    try:
-        with open('/etc/gitlab_gpg/repos/%s.yaml' % group_project) as fh:
-            config.update(yaml.load(fh, Loader=yaml.SafeLoader))
-    except:
-        sys.stderr.write('Failed to load specific configuration file\n')
-        sys.exit(1)
+
+    if os.path.exists('/etc/gitlab_gpg/repos/%s.yaml' % group_project):
+        try:
+            with open('/etc/gitlab_gpg/repos/%s.yaml' % group_project) as fh:
+                config.update(yaml.load(fh, Loader=yaml.SafeLoader))
+        except:
+            sys.stderr.write('Failed to load specific configuration file\n')
+            sys.exit(1)
+    else:
+        group = group_project.split('/')[0]
+        if os.path.exists('/etc/gitlab_gpg/groups/%s.yaml' % group):
+            try:
+                with open('/etc/gitlab_gpg/groups/%s.yaml' % group) as fh:
+                    config.update(yaml.load(fh, Loader=yaml.SafeLoader))
+            except:
+                sys.stderr.write('Failed to load specific configuration file\n')
+                sys.exit(1)
+        else:
+            sys.stderr.write('Cannot find configuration file for this group/project\n')
+            sys.exit(1)
 
 branch = sys.argv[1]
 rev_old = sys.argv[2]
