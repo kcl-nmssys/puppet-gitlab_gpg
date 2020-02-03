@@ -16,7 +16,7 @@ define gitlab_gpg::protected_group (
         ensure  => 'present',
         owner   => 'root',
         group   => $::gitlab_gpg::git_group,
-        mode    => '0440'
+        mode    => '0440',
         content => to_yaml{'ensure' => $ensure};
     }
 

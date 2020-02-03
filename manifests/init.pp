@@ -45,7 +45,7 @@ class gitlab_gpg (
   String $gitlab_auth_token,
   String $reject_message,
   String $warning_message,
-  Hash[Pattern[\A[a-zA-Z0-9_.-]+\z], String] $trusted_keys,
+  Hash[Pattern[/\A[a-zA-Z0-9_.-]+\z/], String] $trusted_keys,
   Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\/([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Hash[String, Enum['protected', 'unprotected', 'warn']] $protected_repos,
   Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Enum['protected', 'unprotected', 'warn']] $protected_groups,
   String $notify_bin,
