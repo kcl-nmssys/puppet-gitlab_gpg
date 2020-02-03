@@ -40,7 +40,7 @@ class gitlab_gpg::config {
   exec {
     "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode update":
       user    => $::gitlab_gpg::git_user,
-      unless  => "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode check",
+      onlyif  => "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode check",
       require => [File[$::gitlab_gpg::config_file]];
   }
 }
