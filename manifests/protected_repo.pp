@@ -10,15 +10,7 @@ define gitlab_gpg::protected_repo (
   Enum['protected', 'unprotected', 'warn'] $ensure = 'protected',
 ) {
 
-  if $ensure == 'unprotected' {
-    file {
-      [
-        "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/update",
-        "/etc/gitlab_gpg/repos/${group_project}.yaml",
-      ]:
-        ensure => 'absent';
-    }
-  } else {
+  if $ensure == 'protected' or $ensure == 'warn' {
     file {
       "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks":
         ensure => 'directory',
@@ -31,11 +23,19 @@ define gitlab_gpg::protected_repo (
         target => "${::gitlab_gpg::install_path}/bin/force_sign.py";
 
       "/etc/gitlab_gpg/repos/${group_project}.yaml":
-        ensure => 'present',
-        owner => 'root',
-        group => $::gitlab_gpg::git_group,
-        mode => '0440',
+        ensure  => 'present',
+        owner   => 'root',
+        group   => $::gitlab_gpg::git_group,
+        mode    => '0440',
         content => to_yaml({'ensure' => $ensure});
+    }
+  } else {
+    file {
+      [
+        "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks/update",
+        "/etc/gitlab_gpg/repos/${group_project}.yaml",
+      ]:
+        ensure => 'absent';
     }
   }
 }

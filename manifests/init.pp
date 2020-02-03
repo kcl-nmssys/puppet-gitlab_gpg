@@ -24,12 +24,14 @@
 #   Message displayed when pushing unsigned commits (in protected mode)
 # @param warning_message
 #   Message displayed when pushing unsigned commits (in warn mode)
-# @param extra_gpg_keys
-#   Extra GPG keys to import e.g. for former users
+# @param trusted_keys
+#   Hash of trusted GPG public keys, gitlab_username => concatenated base64 keys
 # @param protected_repos
 #   Hash of protected repos, group => [project1, project2]
 # @param notify_bin
 #   Path to a program which notified when a push is rejected
+# @param manage_gitlab_keys
+#   Whether to manage users' keys in GitLab
 
 class gitlab_gpg (
   Array[String] $os_packages,
@@ -43,9 +45,11 @@ class gitlab_gpg (
   String $gitlab_auth_token,
   String $reject_message,
   String $warning_message,
-  Hash[String, String] $extra_gpg_keys,
-  Hash[String, Array[String]] $protected_repos,
+  Hash[Pattern[/\A[a-zA-Z0-9_.-]+\z/], String] $trusted_keys,
+  Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\/([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Hash[String, Enum['protected', 'unprotected', 'warn']]] $protected_repos,
+  Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Enum['protected', 'unprotected', 'warn']] $protected_groups,
   String $notify_bin,
+  Boolean $manage_gitlab_keys,
 ) {
 
   contain ::gitlab_gpg::install

@@ -7,6 +7,7 @@ gitlab_gpg::git_user_home: /var/opt/gitlab
 gitlab_gpg::repos_path: /var/opt/gitlab/git-data/repositories
 gitlab_gpg::extra_gpg_keys: {}
 gitlab_gpg::protected_repos: {}
+gitlab_gpg::protected_groups: {}
 gitlab_gpg::warning_message: |
   Your new commits to this repository are not signed with a known GPG key.
   Future pushes may be rejected. Please read the following instructions
@@ -16,3 +17,4 @@ gitlab_gpg::reject_message: |
   Your push has been rejected. Please read the following instructions
   https://docs.gitlab.com/12.1/ee/user/project/repository/gpg_signed_commits/
 gitlab_gpg::notify_bin: /bin/true
+gitlab_gpg::manage_gitlab_keys: true
