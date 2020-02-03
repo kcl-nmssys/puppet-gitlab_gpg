@@ -8,7 +8,7 @@ class gitlab_gpg::install {
       group  => $::gitlab_gpg::git_group,
       mode   => '0550';
 
-    ["${::gitlab_gpg::git_user_home}/.gnupg", "${::gitlab_gpg::install_path}/keys/tmp"]:
+    ["${::gitlab_gpg::git_user_home}/.gnupg", "${::gitlab_gpg::install_path}/keys/gitlab"]:
       ensure => 'directory',
       owner  => $::gitlab_gpg::git_user,
       group  => $::gitlab_gpg::git_group,
