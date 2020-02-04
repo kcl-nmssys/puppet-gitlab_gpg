@@ -29,7 +29,8 @@ class gitlab_gpg::config {
 
   $::gitlab_gpg::protected_groups.each |$group, $ensure| {
     ::gitlab_gpg::protected_group {
-      $group => $ensure;
+      $group:
+        ensure => $ensure;
     }
   }
 
