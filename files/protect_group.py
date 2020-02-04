@@ -80,5 +80,5 @@ for entry in os.listdir(group_dir):
                         sys.stderr.write('Failed to remove link %s: %s\n' % (hook_link, e))
                         sys.exit(1)
 
-if args.mode == 'update':
+if args.mode == 'check':
     sys.exit(need_update)
