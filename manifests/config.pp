@@ -5,7 +5,10 @@ class gitlab_gpg::config {
     notify_bin         => $::gitlab_gpg::notify_bin,
     install_path       => $::gitlab_gpg::install_path,
     repos_path         => $::gitlab_gpg::repos_path,
+    git_path           => $::gitlab_gpg::git_path,
     manage_gitlab_keys => $::gitlab_gpg::manage_gitlab_keys,
+    reject_message     => $::gitlab_gpg::reject_message,
+    warning_message    => $::gitlab_gpg::warning_message,
   }
 
   file {

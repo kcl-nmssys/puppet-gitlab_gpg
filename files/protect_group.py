@@ -31,7 +31,7 @@ except Exception as e:
     sys.stderr.write('Failed to load configuration file: %s\n' % (e,))
     sys.exit(1)
 
-hook_link_src = '%s/force_sign.py' % (config['install_path'],)
+hook_link_src = '%s/bin/force_sign.py' % (config['install_path'],)
 
 group_dir = '%s/%s' % (config['repos_path'], args.group)
 if not os.path.exists(group_dir):
@@ -41,12 +41,12 @@ if not os.path.exists(group_dir):
 need_update = 0
 for entry in os.listdir(group_dir):
     if re.match(r'^([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\.git$', entry) and not re.match(r'^([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\.wiki\.git$', entry):
-        hook_dir = '%s/custom_hooks' % (group_dir,)
+        hook_dir = '%s/%s/custom_hooks' % (group_dir, entry)
         hook_link = '%s/update' % (hook_dir,)
 
         if args.ensure == 'present':
             if os.path.isdir(hook_dir):
-                if not (os.path.islink(hook_link) and os.readlink(hook_link == hook_link_src)):
+                if not (os.path.islink(hook_link) and os.readlink(hook_link) == hook_link_src):
                     need_update += 1
                     if args.mode == 'update':
                         if os.path.exists(hook_link):
