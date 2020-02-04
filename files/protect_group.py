@@ -16,7 +16,7 @@ args = parser.parse_args()
 if not args.mode or args.mode not in ['check', 'update']:
     sys.stderr.write('Invalid --mode specified - must be check or update\n')
     sys.exit(1)
-if not args.group or not re.match(r'^([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_]))$', args.group):
+if not args.group or not re.match(r'^([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])$', args.group):
     sys.stderr.write('Invalid --group option\n')
     sys.exit(1)
 if not args.ensure or args.ensure not in ['absent', 'present']:
