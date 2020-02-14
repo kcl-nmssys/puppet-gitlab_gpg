@@ -59,9 +59,9 @@ username = os.environ['GL_USERNAME']
 zeroes = '0000000000000000000000000000000000000000'
 
 if rev_old == zeroes:
-    git_rev_args = [rev_new, '--not', '--branches=*']
+    git_rev_args = [rev_new, '--not', '--branches=*', '--no-merges']
 else:
-    git_rev_args = ['%s..%s' % (rev_old, rev_new)]
+    git_rev_args = ['--no-merges', '%s..%s' % (rev_old, rev_new)]
 
 try:
     commits = subprocess.check_output([config['git_path'], 'rev-list'] + git_rev_args).rstrip().split('\n')
