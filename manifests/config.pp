@@ -25,7 +25,9 @@ class gitlab_gpg::config {
     $projects.each |$project, $ensure| {
       ::gitlab_gpg::protected_repo {
         "${group}/${project}":
-          ensure => $ensure;
+          group   => $group,
+          project => $project,
+          ensure  => $ensure;
       }
     }
   }
