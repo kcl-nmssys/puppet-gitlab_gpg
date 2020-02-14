@@ -17,7 +17,7 @@ define gitlab_gpg::protected_repo (
       'file',
       "/etc/gitlab_gpg/repos/${group}",
       {
-        ensure => 'present',
+        ensure => 'directory',
         owner  => 'root',
         group  => $::gitlab_gpg::git_group,
         mode   => '0750',
