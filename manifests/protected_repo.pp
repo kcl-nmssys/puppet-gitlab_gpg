@@ -7,10 +7,23 @@
 
 define gitlab_gpg::protected_repo (
   Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\/([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/] $group_project = $title,
+  Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/] $group,
+  Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/] $project,
   Enum['protected', 'unprotected', 'warn'] $ensure = 'protected',
 ) {
 
   if $ensure == 'protected' or $ensure == 'warn' {
+    ensure_resource(
+      'file',
+      "/etc/gitlab_gpg/repos/${group}",
+      {
+        ensure => 'present',
+        owner  => 'root',
+        group  => $::gitlab_gpg::git_group,
+        mode   => '0750',
+      }
+    )
+
     file {
       "${::gitlab_gpg::repos_path}/${group_project}.git/custom_hooks":
         ensure => 'directory',
