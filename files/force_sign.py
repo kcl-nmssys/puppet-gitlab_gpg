@@ -59,6 +59,11 @@ username = os.environ['GL_USERNAME']
 # Special 'hash' used when there are no previous commits
 zeroes = '0000000000000000000000000000000000000000'
 
+# Branch deletion
+if rev_new == zeroes:
+    syslog.syslog(syslog.LOG_INFO, 'Branch deleted: %s by %s' % (branch, username))
+    sys.exit(0)
+
 if rev_old == zeroes:
     git_rev_args = [rev_new, '--not', '--branches=*', '--no-merges']
 else:
