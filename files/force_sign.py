@@ -13,6 +13,7 @@ import time
 import yaml
 
 def git_show(commit, format):
+    output = ''
     try:
         output = subprocess.check_output([config['git_path'], 'show', commit, '-s', '--format=%%%s' % format])
     except:
@@ -97,6 +98,10 @@ if config['ensure'] == 'protected':
     messages.append(config['reject_message'])
 else:
     messages.append(config['warning_message'])
+
+# New branch with no new commits
+if len(commits) == 1 and commits[0] == '':
+    sys.exit(0)
 
 for commit in commits:
     meta = {}
