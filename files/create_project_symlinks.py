@@ -57,7 +57,7 @@ for project in projects:
     proj_hash = hashlib.sha256(str(project.id)).hexdigest()
     hash_path = '%s/@hashed/%s/%s/%s.git' % (config['repos_path'], proj_hash[0:2], proj_hash[2:4], proj_hash)
     proj_path = '%s/%s.git' % (config['repos_path'], project.path_with_namespace)
-    hashes[proj_hash] = project.path_with_namespace
+    hashes[proj_hash] = project.path_with_namespace.encode()
 
     if os.path.exists(hash_path) and not os.path.exists(proj_path):
         need_update = True
