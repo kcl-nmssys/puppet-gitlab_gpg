@@ -3,6 +3,7 @@ class gitlab_gpg::config {
     gitlab_hostname    => $::gitlab_gpg::gitlab_hostname,
     gitlab_auth_token  => $::gitlab_gpg::gitlab_auth_token,
     notify_bin         => $::gitlab_gpg::notify_bin,
+    error_bin          => $::gitlab_gpg::error_bin,
     install_path       => $::gitlab_gpg::install_path,
     repos_path         => $::gitlab_gpg::repos_path,
     git_path           => $::gitlab_gpg::git_path,
@@ -55,6 +56,13 @@ class gitlab_gpg::config {
     "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode update":
       user    => $::gitlab_gpg::git_user,
       onlyif  => "${::gitlab_gpg::install_path}/bin/manage_keys.py --mode check",
+      require => [File[$::gitlab_gpg::config_file]];
+  }
+
+  exec {
+    "${::gitlab_gpg::install_path}/bin/create_project_symlinks.py --mode update":
+      user    => $::gitlab_gpg::git_user,
+      onlyif  => "${::gitlab_gpg::install_path}/bin/create_project_symlinks.py --mode check",
       require => [File[$::gitlab_gpg::config_file]];
   }
 }
