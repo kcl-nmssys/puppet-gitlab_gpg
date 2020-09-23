@@ -29,7 +29,9 @@
 # @param protected_repos
 #   Hash of protected repos, group => [project1, project2]
 # @param notify_bin
-#   Path to a program which notified when a push is rejected
+#   Path to a program which is notified when a push is rejected
+# @param error_bin
+#   List containing path and arguments to a program which is run when there's an error
 # @param manage_gitlab_keys
 #   Whether to manage users' keys in GitLab
 
@@ -49,6 +51,7 @@ class gitlab_gpg (
   Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Enum['protected', 'unprotected', 'warn']]] $protected_repos,
   Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Enum['protected', 'unprotected', 'warn']] $protected_groups,
   String $notify_bin,
+  String $error_bin,
   Boolean $manage_gitlab_keys,
 ) {
 

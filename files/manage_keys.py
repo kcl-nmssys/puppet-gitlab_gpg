@@ -9,9 +9,20 @@ import gnupg
 import os
 import pwd
 import re
+import subprocess
 import sys
 import syslog
 import yaml
+
+def log_error(message):
+    error_bin = config['error_bin']
+    error_bin.append(message)
+    subprocess.call(error_bin)
+    syslog.syslog(syslog.LOG_ERR, message)
+
+def die(message):
+    log_error(message)
+    sys.exit(1)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode')
@@ -41,16 +52,14 @@ try:
     for key in gpg.list_keys():
         current_keys_keyring[key['fingerprint']] = 1
 except Exception as e:
-    syslog.syslog(syslog.LOG_ERR, 'Failed to load keys from keyring: %s' % (e,))
-    sys.exit(1)
+    die('Failed to load keys from keyring: %s' % (e,))
 
 # See what's in GitLab already
 try:
     gl = gitlab.Gitlab('https://%s/' % config['gitlab_hostname'], private_token=config['gitlab_auth_token'])
     users = gl.users.list()
 except Exception as e:
-    syslog.syslog(syslog.LOG_ERR, 'Failed to get users list from GitLab: %s' % (e,))
-    sys.exit(1)
+    die('Failed to get users list from GitLab: %s' % (e,))
 for user in users:
     keys = user.gpgkeys.list()
     if len(keys) > 0:
@@ -80,7 +89,7 @@ for file in os.listdir('keys/trusted'):
                     if import_result.count > 0:
                         syslog.syslog(syslog.LOG_INFO, 'Imported key [%s] [%s] into keyring' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
                     else:
-                        syslog.syslog(syslog.LOG_ERR, 'Failed to import key [%s] [%s] into keyring' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
+                        log_error('Failed to import key [%s] [%s] into keyring' % (key_data['fingerprint'], ', '.join(key_data['uids'])))
                         update_status = 1
 
             if key_data['fingerprint'] not in current_keys_gitlab:
@@ -92,7 +101,7 @@ for file in os.listdir('keys/trusted'):
                         user.gpgkeys.create({'key': gpg.export_keys(key_data['fingerprint'])})
                         syslog.syslog(syslog.LOG_INFO, 'Imported key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
                     except Exception as e:
-                        syslog.syslog(syslog.LOG_ERR, 'Failed to import key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
+                        log_error('Failed to import key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
 
 # Remove any unexpected keys from GitLab
 if config['manage_gitlab_keys']:
@@ -106,7 +115,7 @@ if config['manage_gitlab_keys']:
                     user.gpgkeys.delete(current_keys_gitlab[fingerprint][key])
                     syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] [%s] from GitLab' % (fingerprint, current_keys_gitlab[fingerprint][user]))
                 except Exception as e:
-                    syslog.syslog(syslog.LOG_ERR, 'Failed to delete key [%s] [%s] from GitLab: %s' % (fingerprint, current_keys_gitlab[fingerprint][user], e))
+                    log_error('Failed to delete key [%s] [%s] from GitLab: %s' % (fingerprint, current_keys_gitlab[fingerprint][user], e))
                     update_status = 1
 
 # Remove any unexpected keys from keyring
