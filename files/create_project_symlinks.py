@@ -50,10 +50,14 @@ except Exception as e:
     log_error('Failed to get projects list from GitLab: %s' % (e,))
     sys.exit(1)
 
+hashes = {}
+hashes_file = '/etc/gitlab_gpg/hashes.yaml'
+
 for project in projects:
     proj_hash = hashlib.sha256(str(project.id)).hexdigest()
     hash_path = '%s/@hashed/%s/%s/%s.git' % (config['repos_path'], proj_hash[0:2], proj_hash[2:4], proj_hash)
     proj_path = '%s/%s.git' % (config['repos_path'], project.path_with_namespace)
+    hashes[proj_hash] = project.path_with_namespace
 
     if os.path.exists(hash_path) and not os.path.exists(proj_path):
         need_update = True
@@ -74,8 +78,17 @@ for project in projects:
                 log_error('Failed creating project symlink %s -> %s: %s' % (proj_path, hash_path, e))
                 update_status += 1
 
+if args.mode == 'update' and need_update:
+    try:
+        with open(hashes_file + '.new', 'w') as fh:
+            yaml.dump(hashes, fh, default_flow_style=False)
+        os.rename(hashes_file + '.new', hashes_file)
+    except Exception as e:
+        log_error('Failed updating hashes file: %s' % (e,))
+        update_status += 1
+
 if args.mode == 'check':
-    if need_update:
+    if need_update or not os.path.exists(hashes_file):
         sys.exit(0)
     sys.exit(1)
 

@@ -31,6 +31,20 @@ cwd = os.getcwd()
 if cwd.startswith(config['repos_path']):
     group_project = cwd[len(config['repos_path']) + 1:-4]
 
+    if group_project.startswith('@hashed'):
+        project_hash = os.path.basename(group_project)
+        try:
+            with open('/etc/gitlab_gpg/hashes.yaml') as fh:
+                hashes = yaml.load(fh, Loader=yaml.SafeLoader)
+        except:
+            sys.stderr.write('Failed to load hashes file\n')
+            sys.exit(1)
+        if project_hash in hashes:
+            group_project = hashes[project_hash]
+        else:
+            sys.stderr.write('Cannot determine group/project\n')
+            sys.exit(1)
+
     if os.path.exists('/etc/gitlab_gpg/repos/%s.yaml' % group_project):
         try:
             with open('/etc/gitlab_gpg/repos/%s.yaml' % group_project) as fh:
@@ -50,6 +64,10 @@ if cwd.startswith(config['repos_path']):
         else:
             sys.stderr.write('Cannot find configuration file for this group/project\n')
             sys.exit(1)
+
+else:
+    sys.stderr.write('Unexpected current directory\n')
+    sys.exit(1)
 
 branch = sys.argv[1]
 rev_old = sys.argv[2]
