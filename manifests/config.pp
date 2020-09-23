@@ -59,7 +59,7 @@ class gitlab_gpg::config {
       require => [File[$::gitlab_gpg::config_file]];
 
     "${::gitlab_gpg::install_path}/bin/create_project_symlinks.py --mode update":
-      user    => $::gitlab_gpg::git_user,
+      user    => 'root',
       onlyif  => "${::gitlab_gpg::install_path}/bin/create_project_symlinks.py --mode check",
       require => [File[$::gitlab_gpg::config_file]];
   }
