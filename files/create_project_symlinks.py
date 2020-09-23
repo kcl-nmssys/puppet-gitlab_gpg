@@ -78,7 +78,7 @@ for project in projects:
                 log_error('Failed creating project symlink %s -> %s: %s' % (proj_path, hash_path, e))
                 update_status += 1
 
-if args.mode == 'update' and need_update:
+if args.mode == 'update':
     try:
         with open(hashes_file + '.new', 'w') as fh:
             yaml.dump(hashes, fh, default_flow_style=False)
@@ -88,8 +88,17 @@ if args.mode == 'update' and need_update:
         update_status += 1
 
 if args.mode == 'check':
-    if need_update or not os.path.exists(hashes_file):
+    if need_update:
         sys.exit(0)
+
+    try:
+        with open(hashes_file) as fh:
+            hashes_yaml = yaml.load(fh, Loader=yaml.SafeLoader)
+        if hashes != hashes_yaml:
+            sys.exit(0)
+    except:
+        sys.exit(0)
+
     sys.exit(1)
 
 sys.exit(update_status)
