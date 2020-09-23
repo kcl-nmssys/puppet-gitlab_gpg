@@ -22,6 +22,13 @@ class gitlab_gpg::install {
       purge   => true,
       recurse => true;
 
+    "${::gitlab_gpg::install_path}/bin/create_project_symlinks.py":
+      ensure => 'present',
+      owner  => 'root',
+      group  => $::gitlab_gpg::git_group,
+      mode   => '0550',
+      source => 'puppet:///modules/gitlab_gpg/create_project_symlinks.py';
+
     "${::gitlab_gpg::install_path}/bin/force_sign.py":
       ensure => 'present',
       owner  => 'root',
