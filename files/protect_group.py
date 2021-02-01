@@ -65,7 +65,7 @@ for entry in os.listdir(group_dir):
                 need_update += 1
                 if args.mode == 'update':
                     try:
-                        os.mkdir(hook_dir, 0755)
+                        os.mkdir(hook_dir, 0o0755)
                         os.symlink(hook_link_src, hook_link)
                     except Exception as e:
                         sys.stderr.write('Failed creating directory and symlink %s: %s\n' % (hook_link, e))
