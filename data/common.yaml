@@ -18,12 +18,6 @@ gitlab_gpg::reject_message: |
   Your push has been rejected. Please read the following instructions
   https://docs.gitlab.com/12.1/ee/user/project/repository/gpg_signed_commits/
   and have your key added to gitlab_gpg::trusted_keys
-gitlab_gpg::notify_bin: /bin/true
-gitlab_gpg::error_bin:
-  - '/usr/local/bin/slack_msg'
-  - '--channel'
-  - 'alerts'
-  - '--username'
-  - 'puppet-gitlab_gpg'
-  - '--message'
+gitlab_gpg::notify_bin: ['/bin/true']
+gitlab_gpg::error_bin: ['/bin/true']
 gitlab_gpg::manage_gitlab_keys: true

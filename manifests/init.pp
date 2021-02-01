@@ -50,7 +50,7 @@ class gitlab_gpg (
   Hash[Pattern[/\A[a-zA-Z0-9_.-]+\z/], String] $trusted_keys,
   Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Enum['protected', 'unprotected', 'warn']]] $protected_repos,
   Hash[Pattern[/\A([a-zA-Z0-9_\.][a-zA-Z0-9_\-\.]*[a-zA-Z0-9_\-]|[a-zA-Z0-9_])\z/], Enum['protected', 'unprotected', 'warn']] $protected_groups,
-  String $notify_bin,
+  Array[String] $notify_bin,
   Array[String] $error_bin,
   Boolean $manage_gitlab_keys,
 ) {
