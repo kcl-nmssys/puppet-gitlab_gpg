@@ -15,7 +15,7 @@ import yaml
 def git_show(commit, format):
     output = ''
     try:
-        output = subprocess.check_output([config['git_path'], 'show', commit, '-s', '--format=%%%s' % format])
+        output = subprocess.check_output([config['git_path'], 'show', commit, '-s', '--format=%%%s' % format]).decode()
     except:
         sys.stderr.write('Failed to get git data %s for commit %s' % (format, commit))
     return output.strip()
@@ -53,7 +53,7 @@ if cwd.startswith(config['repos_path']):
             sys.stderr.write('Failed to load specific configuration file\n')
             sys.exit(1)
     else:
-        group = group_project.split('/')[0]
+        group = group_project.decode().split('/')[0]
         if os.path.exists('/etc/gitlab_gpg/groups/%s.yaml' % group):
             try:
                 with open('/etc/gitlab_gpg/groups/%s.yaml' % group) as fh:
@@ -88,7 +88,7 @@ else:
     git_rev_args = ['--no-merges', '%s..%s' % (rev_old, rev_new)]
 
 try:
-    commits = subprocess.check_output([config['git_path'], 'rev-list'] + git_rev_args).rstrip().split('\n')
+    commits = subprocess.check_output([config['git_path'], 'rev-list'] + git_rev_args).rstrip().decode().split('\n')
 except:
     sys.stderr.write('Failed to get commit list\n')
     sys.exit(1)
@@ -150,8 +150,9 @@ for commit in commits:
             })
             syslog.syslog(syslog.LOG_WARNING, 'Rejected commit %s' % commit)
             syslog.syslog(syslog.LOG_WARNING, json_message)
-            proc = subprocess.Popen(config['notify_bin'], stdin=subprocess.PIPE)
-            proc.communicate(input=json_message)
+            notify_cmd = config['notify_bin']
+            notify_cmd.append(message)
+            subprocess.call(notify_cmd)
 
 if len(messages) > 1:
     for message in messages:
