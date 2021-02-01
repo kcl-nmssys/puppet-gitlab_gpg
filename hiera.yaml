@@ -7,6 +7,6 @@ defaults:
 hierarchy:
   - name: "Hiera data"
     paths:
-      - "common.yaml"
-      - "os/%{facts.os.family}.yaml"
       - "os/%{facts.os.name}.yaml"
+      - "os/%{facts.os.family}.yaml"
+      - "common.yaml"
