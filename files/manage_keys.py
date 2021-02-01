@@ -45,6 +45,7 @@ update_status = 0
 trusted = {}
 current_keys_keyring = {}
 current_keys_gitlab = {}
+managed_users = []
 
 # See what's in our keyring already
 try:
@@ -76,6 +77,7 @@ for file in os.listdir('keys/trusted'):
     matched = re.match(r'^([a-zA-Z0-9_.-]+)\.pub$', file)
     if matched:
         username = matched.group(1)
+        managed_users.append(username)
         key_path = 'keys/trusted/%s' % file
         keys_data = gpg.scan_keys(key_path)
         for key_data in keys_data:
@@ -103,19 +105,19 @@ for file in os.listdir('keys/trusted'):
                     except Exception as e:
                         log_error('Failed to import key [%s] [%s] into GitLab' % (key_data['fingerprint'], username))
 
-# Remove any unexpected keys from GitLab
+# Remove any unexpected keys from GitLab (for users whose keys we manage)
 if config['manage_gitlab_keys']:
     for fingerprint in current_keys_gitlab.keys():
-        if fingerprint not in trusted:
+        if fingerprint not in trusted and current_keys_gitlab[fingerprint]["user"] in managed_users:
             if args.mode == 'check':
                 need_update = True
             else:
                 try:
-                    user = gl.users.list(username=current_keys_gitlab[fingerprint][user])[0]
+                    user = gl.users.list(username=current_keys_gitlab[fingerprint]["user"])[0]
                     user.gpgkeys.delete(current_keys_gitlab[fingerprint][key])
-                    syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] [%s] from GitLab' % (fingerprint, current_keys_gitlab[fingerprint][user]))
+                    syslog.syslog(syslog.LOG_INFO, 'Deleted key [%s] [%s] from GitLab' % (fingerprint, current_keys_gitlab[fingerprint]["user"]))
                 except Exception as e:
-                    log_error('Failed to delete key [%s] [%s] from GitLab: %s' % (fingerprint, current_keys_gitlab[fingerprint][user], e))
+                    log_error('Failed to delete key [%s] [%s] from GitLab: %s' % (fingerprint, current_keys_gitlab[fingerprint]["user"], e))
                     update_status = 1
 
 # Remove any unexpected keys from keyring
